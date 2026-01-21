@@ -5,7 +5,7 @@
 
 function getBusinessConfig() {
   return {
-    // Business name - can be overridden via environment variable
+    // Business name - default is Tazza Pizza (can be overridden via environment variable)
     name: process.env.BUSINESS_NAME || 'Tazza Pizza',
     
     // Business location - can be overridden via environment variable
