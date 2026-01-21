@@ -76,6 +76,15 @@ class OpenAIService {
     fetch('http://127.0.0.1:7244/ingest/568a64c9-92ee-463b-a9e1-63b6aaa39ebb',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'openai-service.js:_setupSession',message:'OPENAI_SESSION_SETUP',data:{businessName:businessName,businessGreeting:businessGreeting,envBusinessName:process.env.BUSINESS_NAME},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'C_openai_instructions'})}).catch(()=>{});
     // #endregion
     
+    // Log to Railway (visible in logs)
+    console.log('========================================');
+    console.log('🤖 OPENAI SESSION SETUP - BUSINESS INFO');
+    console.log('========================================');
+    console.log(`📛 Business name being used: ${businessName}`);
+    console.log(`📛 Business greeting: ${businessGreeting}`);
+    console.log(`📛 BUSINESS_NAME env var: ${process.env.BUSINESS_NAME || '(NOT SET)'}`);
+    console.log('========================================');
+    
     const instructions = `You are a friendly pizza ordering assistant for ${businessName}. You help customers place orders over the phone. NEVER mention "Uncle Sal's" - always say "${businessName}".
 
 AVAILABLE MENU ITEMS:

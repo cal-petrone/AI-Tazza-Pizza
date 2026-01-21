@@ -20,11 +20,16 @@ const { getBusinessName, getBusinessConfig } = require('./src/config/business');
 fetch('http://127.0.0.1:7244/ingest/568a64c9-92ee-463b-a9e1-63b6aaa39ebb',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'server-new.js:startup',message:'SERVER_NEW_JS_STARTING',data:{serverFile:'server-new.js',businessName:process.env.BUSINESS_NAME,businessNameFromConfig:getBusinessName(),fullConfig:getBusinessConfig()},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'A_server_file'})}).catch(()=>{});
 // #endregion
 
-// Log branding at startup
-console.log('=== BRANDING LOADED ===');
-console.log(`BUSINESS_NAME=${process.env.BUSINESS_NAME || '(not set, using default)'}`);
-console.log(`Business name from config: ${getBusinessName()}`);
-console.log('========================');
+// Log branding at startup (visible in Railway logs)
+console.log('========================================');
+console.log('🏪 BRANDING CONFIGURATION LOADED');
+console.log('========================================');
+console.log(`📛 BUSINESS_NAME env var: ${process.env.BUSINESS_NAME || '(NOT SET - using default)'}`);
+console.log(`📛 Resolved business name: ${getBusinessName()}`);
+console.log(`📛 Full config: ${JSON.stringify(getBusinessConfig())}`);
+console.log('========================================');
+console.log('🔥 THIS IS server-new.js (NOT server.js)');
+console.log('========================================');
 
 // Validate environment variables at startup
 try {
