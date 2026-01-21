@@ -2,9 +2,9 @@
   "name": "uncle-sals-pizza-ai-assistant",
   "version": "1.0.0",
   "description": "Real-time AI pizza ordering assistant using Twilio Media Streams and OpenAI Realtime API",
-  "main": "server.js",
+  "main": "server-new.js",
   "scripts": {
-    "start": "node server.js",
+    "start": "node server-new.js",
     "start:permanent": "pm2 start ecosystem.config.js",
     "start:new": "node server-new.js",
     "dev": "nodemon server.js",
