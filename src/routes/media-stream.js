@@ -7,10 +7,15 @@ const WebSocket = require('ws');
 const OrderManager = require('../services/order-manager');
 const OpenAIService = require('../services/openai-service');
 const Logger = require('../services/logger');
+const { getBusinessName, getBusinessGreeting } = require('../config/business');
 
 function setupMediaStream(wss, logger) {
   wss.on('connection', (ws, req) => {
     console.log('📡 Twilio Media Stream WebSocket connection received');
+    
+    // #region agent log
+    fetch('http://127.0.0.1:7244/ingest/568a64c9-92ee-463b-a9e1-63b6aaa39ebb',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'media-stream.js:connection',message:'TWILIO_WS_CONNECTION',data:{businessName:getBusinessName(),businessGreeting:getBusinessGreeting(),envBusinessName:process.env.BUSINESS_NAME,serverFile:'server-new.js/media-stream'},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'D_media_stream'})}).catch(()=>{});
+    // #endregion
     
     let streamSid = null;
     let callSid = null;

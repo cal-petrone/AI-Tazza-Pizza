@@ -14,6 +14,17 @@ const handleIncomingCall = require('./src/routes/incoming-call');
 const setupMediaStream = require('./src/routes/media-stream');
 const healthCheck = require('./src/routes/health');
 const Logger = require('./src/services/logger');
+const { getBusinessName, getBusinessConfig } = require('./src/config/business');
+
+// #region agent log
+fetch('http://127.0.0.1:7244/ingest/568a64c9-92ee-463b-a9e1-63b6aaa39ebb',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'server-new.js:startup',message:'SERVER_NEW_JS_STARTING',data:{serverFile:'server-new.js',businessName:process.env.BUSINESS_NAME,businessNameFromConfig:getBusinessName(),fullConfig:getBusinessConfig()},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'A_server_file'})}).catch(()=>{});
+// #endregion
+
+// Log branding at startup
+console.log('=== BRANDING LOADED ===');
+console.log(`BUSINESS_NAME=${process.env.BUSINESS_NAME || '(not set, using default)'}`);
+console.log(`Business name from config: ${getBusinessName()}`);
+console.log('========================');
 
 // Validate environment variables at startup
 try {

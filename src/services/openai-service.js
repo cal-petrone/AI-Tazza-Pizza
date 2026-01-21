@@ -5,7 +5,7 @@
 
 const WebSocket = require('ws');
 const { getMenuText } = require('../config/menu');
-const { getBusinessName } = require('../config/business');
+const { getBusinessName, getBusinessGreeting } = require('../config/business');
 
 class OpenAIService {
   constructor(apiKey, orderManager, onAudioCallback, onTranscriptCallback) {
@@ -70,8 +70,13 @@ class OpenAIService {
     const menuText = getMenuText();
     const orderSummary = this.orderManager.getSummary();
     const businessName = getBusinessName();
+    const businessGreeting = getBusinessGreeting();
     
-    const instructions = `You are a friendly pizza ordering assistant for Tazza Pizza. You help customers place orders over the phone. NEVER mention "Uncle Sal's" - always say "Tazza Pizza".
+    // #region agent log
+    fetch('http://127.0.0.1:7244/ingest/568a64c9-92ee-463b-a9e1-63b6aaa39ebb',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'openai-service.js:_setupSession',message:'OPENAI_SESSION_SETUP',data:{businessName:businessName,businessGreeting:businessGreeting,envBusinessName:process.env.BUSINESS_NAME},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'C_openai_instructions'})}).catch(()=>{});
+    // #endregion
+    
+    const instructions = `You are a friendly pizza ordering assistant for ${businessName}. You help customers place orders over the phone. NEVER mention "Uncle Sal's" - always say "${businessName}".
 
 AVAILABLE MENU ITEMS:
 ${menuText}
@@ -84,7 +89,7 @@ Customer Name: ${this.orderManager.getOrder().customerName || 'not provided'}
 Payment Method: ${this.orderManager.getOrder().paymentMethod || 'not specified'}
 
 CONVERSATION RULES:
-1. Start by greeting: "Hi thank you for calling Tazza Pizza what could i get for you today" - ALWAYS say "Tazza Pizza", NEVER say "Uncle Sal's"
+1. Start by greeting: "${businessGreeting}" - ALWAYS say "${businessName}", NEVER say "Uncle Sal's"
 2. When customer mentions items, use the add_item_to_order tool immediately
 3. Ask follow-up questions naturally (size, quantity, etc.)
 4. Periodically summarize the order: "So far you have [items]. What else can I get you?"
