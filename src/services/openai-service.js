@@ -84,7 +84,7 @@ Customer Name: ${this.orderManager.getOrder().customerName || 'not provided'}
 Payment Method: ${this.orderManager.getOrder().paymentMethod || 'not specified'}
 
 CONVERSATION RULES:
-1. Start by greeting: "Hi thank you for calling ${businessName} what could i get for you today"
+1. Start by greeting: "Hi thank you for calling Tazza Pizza what could i get for you today" - ALWAYS say "Tazza Pizza", NEVER say "Uncle Sal's"
 2. When customer mentions items, use the add_item_to_order tool immediately
 3. Ask follow-up questions naturally (size, quantity, etc.)
 4. Periodically summarize the order: "So far you have [items]. What else can I get you?"
