@@ -1,0 +1,59 @@
+# Railway Environment Variables Template
+# Copy this into Railway → Variables → Raw Editor
+# Replace all placeholder values with actual credentials
+
+# ============================================
+# REQUIRED - Must have these for the agent to work
+# ============================================
+
+# Twilio Configuration (can reuse same account for multiple companies)
+TWILIO_ACCOUNT_SID=REPLACE_WITH_YOUR_TWILIO_ACCOUNT_SID
+TWILIO_AUTH_TOKEN=REPLACE_WITH_YOUR_TWILIO_AUTH_TOKEN
+
+# OpenAI Configuration (can reuse same API key)
+OPENAI_API_KEY=REPLACE_WITH_YOUR_OPENAI_API_KEY
+
+# Zapier Webhook (CREATE NEW WEBHOOK FOR EACH COMPANY)
+ZAPIER_WEBHOOK_URL=https://hooks.zapier.com/hooks/catch/REPLACE_WITH_NEW_COMPANY_WEBHOOK
+
+# Server Configuration
+PORT=3000
+
+# ============================================
+# REQUIRED - Business Configuration (CUSTOMIZE FOR EACH COMPANY)
+# ============================================
+
+# Business Name - This is what the AI will say when greeting customers
+BUSINESS_NAME=REPLACE_WITH_COMPANY_NAME
+
+# Business Location - Used in order logging
+BUSINESS_LOCATION=REPLACE_WITH_CITY_STATE
+
+# Tax Rate (decimal format, 0.08 = 8%)
+TAX_RATE=0.08
+
+# ============================================
+# OPTIONAL - Google Sheets Integration
+# (Only add these if you want Google Sheets logging for this company)
+# ============================================
+
+# Google Sheets Configuration
+# GOOGLE_SHEETS_ID=REPLACE_WITH_NEW_SHEET_ID
+# GOOGLE_SHEETS_MENU_ID=REPLACE_WITH_MENU_SHEET_ID
+# GOOGLE_SHEETS_MENU_SHEET=Menu Items
+# GOOGLE_SHEETS_CREDENTIALS_BASE64=REPLACE_WITH_BASE64_CREDENTIALS
+
+# ============================================
+# QUICK COPY VERSION (without comments)
+# ============================================
+# Copy the section below into Railway Raw Editor:
+
+TWILIO_ACCOUNT_SID=REPLACE_WITH_YOUR_TWILIO_ACCOUNT_SID
+TWILIO_AUTH_TOKEN=REPLACE_WITH_YOUR_TWILIO_AUTH_TOKEN
+OPENAI_API_KEY=REPLACE_WITH_YOUR_OPENAI_API_KEY
+ZAPIER_WEBHOOK_URL=https://hooks.zapier.com/hooks/catch/REPLACE_WITH_NEW_COMPANY_WEBHOOK
+PORT=3000
+BUSINESS_NAME=REPLACE_WITH_COMPANY_NAME
+BUSINESS_LOCATION=REPLACE_WITH_CITY_STATE
+TAX_RATE=0.08
+
