@@ -5,6 +5,7 @@
 
 const WebSocket = require('ws');
 const { getMenuText } = require('../config/menu');
+const { getBusinessName } = require('../config/business');
 
 class OpenAIService {
   constructor(apiKey, orderManager, onAudioCallback, onTranscriptCallback) {
@@ -68,8 +69,9 @@ class OpenAIService {
   _setupSession() {
     const menuText = getMenuText();
     const orderSummary = this.orderManager.getSummary();
+    const businessName = getBusinessName();
     
-    const instructions = `You are a friendly pizza ordering assistant for Uncle Sal's Pizza. You help customers place orders over the phone.
+    const instructions = `You are a friendly pizza ordering assistant for ${businessName}. You help customers place orders over the phone.
 
 AVAILABLE MENU ITEMS:
 ${menuText}
@@ -82,7 +84,7 @@ Customer Name: ${this.orderManager.getOrder().customerName || 'not provided'}
 Payment Method: ${this.orderManager.getOrder().paymentMethod || 'not specified'}
 
 CONVERSATION RULES:
-1. Start by greeting: "Thanks for calling Uncle Sal's Pizza! What would you like to order today?"
+1. Start by greeting: "Thanks for calling ${businessName}! What would you like to order today?"
 2. When customer mentions items, use the add_item_to_order tool immediately
 3. Ask follow-up questions naturally (size, quantity, etc.)
 4. Periodically summarize the order: "So far you have [items]. What else can I get you?"

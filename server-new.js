@@ -46,8 +46,10 @@ app.post('/incoming-call', handleIncomingCall);
 app.get('/health', healthCheck);
 
 // WebSocket server for Media Streams
-const server = app.listen(port, () => {
+// Listen on 0.0.0.0 for Railway deployment (allows external connections)
+const server = app.listen(port, '0.0.0.0', () => {
   console.log(`🚀 Server running on port ${port}`);
+  console.log(`🌐 Server listening on all interfaces (0.0.0.0) for Railway deployment`);
   console.log(`📞 Incoming call webhook: POST /incoming-call`);
   console.log(`📡 Media stream WebSocket: /media-stream`);
   console.log(`❤️  Health check: GET /health`);

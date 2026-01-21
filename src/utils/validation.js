@@ -15,7 +15,11 @@ function validateEnv() {
   const optional = [
     'GOOGLE_SHEETS_CREDENTIALS_PATH',
     'GOOGLE_SHEETS_ID',
-    'NGROK_URL'
+    'NGROK_URL',
+    'BUSINESS_NAME',
+    'BUSINESS_LOCATION',
+    'TAX_RATE',
+    'BUSINESS_PHONE'
   ];
   
   const missing = [];

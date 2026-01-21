@@ -93,7 +93,12 @@ OPENAI_API_KEY=your_openai_api_key
 ZAPIER_WEBHOOK_URL=https://hooks.zapier.com/hooks/catch/your/webhook/url
 PORT=3000
 
-# Optional
+# Optional - Business Configuration
+BUSINESS_NAME=Your Pizza Company Name
+BUSINESS_LOCATION=Your City, State
+TAX_RATE=0.08
+
+# Optional - Integrations
 GOOGLE_SHEETS_CREDENTIALS_PATH=./google-credentials.json
 GOOGLE_SHEETS_ID=your_google_sheets_id
 NGROK_URL=https://your-ngrok-url.ngrok.io

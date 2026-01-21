@@ -4,6 +4,7 @@
  */
 
 const { getMenu, findMenuItem, getPrice } = require('../config/menu');
+const { getBusinessName, getBusinessLocation, getTaxRate } = require('../config/business');
 
 class OrderManager {
   constructor(streamSid, callSid, fromNumber) {
@@ -148,7 +149,11 @@ class OrderManager {
   /**
    * Recalculate order totals
    */
-  recalculateTotals(taxRate = 0.08) {
+  recalculateTotals(taxRate = null) {
+    // Use configured tax rate if not provided
+    if (taxRate === null) {
+      taxRate = getTaxRate();
+    }
     let subtotal = 0;
     
     this.order.items.forEach(item => {
@@ -244,7 +249,9 @@ Payment: ${this.order.paymentMethod || 'Not specified'}`;
       tax: this.order.tax,
       total: this.order.total,
       status: this.order.confirmed ? 'completed' : 'pending',
-      itemsSummary: this.getSummary()
+      itemsSummary: this.getSummary(),
+      storeName: getBusinessName(),
+      storeLocation: getBusinessLocation()
     };
   }
   
