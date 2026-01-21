@@ -9,6 +9,18 @@
 // Load environment variables from .env file
 require('dotenv').config();
 
+// Load business configuration (BUSINESS_NAME, BUSINESS_GREETING from env vars)
+const { getBusinessName, getBusinessGreeting, getBusinessConfig } = require('./src/config/business');
+
+// Log branding at startup
+console.log('========================================');
+console.log('🏪 BRANDING CONFIGURATION LOADED');
+console.log('========================================');
+console.log(`📛 BUSINESS_NAME env var: ${process.env.BUSINESS_NAME || '(NOT SET)'}`);
+console.log(`📛 Resolved business name: ${getBusinessName()}`);
+console.log(`📛 Business greeting: ${getBusinessGreeting()}`);
+console.log('========================================');
+
 // ============================================================================
 // CRITICAL: GLOBAL ERROR HANDLERS - PREVENT CRASHES, ENSURE PERMANENT UPTIME
 // ============================================================================
@@ -114,7 +126,7 @@ app.get('/health', (req, res) => {
 // CRITICAL: Root endpoint - always respond to prevent "application error"
 app.get('/', (req, res) => {
   res.status(200).json({ 
-    status: 'Uncle Sal\'s Pizza AI Receptionist is running',
+    status: `${getBusinessName()} AI Receptionist is running`,
     timestamp: new Date().toISOString()
   });
 });
@@ -421,7 +433,8 @@ function createConversationSummary(order) {
  * Get minimal core rules prompt (~200 tokens) - ultra-compact
  */
 function getCoreRulesPrompt() {
-  return `Pizza assistant for Uncle Sal's. Max 1-2 short sentences per response.
+  const businessName = getBusinessName();
+  return `Pizza assistant for ${businessName}. Max 1-2 short sentences per response.
 
 CRITICAL TOOL REQUIREMENTS - YOU MUST CALL THESE TOOLS:
 1. add_item_to_order - Call IMMEDIATELY when customer orders ANY food item (include "flavor" for wings!)
@@ -432,7 +445,7 @@ CRITICAL TOOL REQUIREMENTS - YOU MUST CALL THESE TOOLS:
 6. get_item_description - Call when customer asks "what is [item]?" or "what comes on [item]?"
 
 ORDER FLOW (follow this EXACT sequence):
-1. Greet: "Thanks for calling Uncle Sal's. What can I get you?"
+1. Greet: "${getBusinessGreeting()}"
 2. When customer orders item → Check requirements:
    - IF item has multiple sizes AND customer didn't specify size → Ask "What size would you like?" (DO NOT call add_item_to_order yet)
    - IF item is WINGS and customer didn't specify FLAVOR → Ask "What flavor would you like for your wings?" (DO NOT call add_item_to_order yet)
@@ -442,7 +455,7 @@ ORDER FLOW (follow this EXACT sequence):
 5. When customer says pickup/delivery → Call set_delivery_method
 6. IF DELIVERY → Ask "What's the delivery address?" → When given address → Call set_address → Confirm address
 7. Ask "And what name for the order?" → When given name → Call set_customer_name → Confirm name
-8. Call confirm_order → Say "Awesome, thanks for ordering with Uncle Sal's today!"
+8. Call confirm_order → Say "Awesome, thanks for ordering with ${businessName} today!"
 
 WING ORDERING RULES (CRITICAL - FOLLOW THIS EXACT ORDER):
 1. PIECE COUNT MUST BE ASKED FIRST (before flavor):
@@ -2836,7 +2849,7 @@ wss.on('connection', (ws, req) => {
                         content: [
                           {
                             type: 'input_text',
-                          text: 'The customer just called. You MUST immediately greet them by saying the COMPLETE sentence: "Thanks for calling Uncle Sal\'s Pizza. What would you like to order?" - FINISH THE ENTIRE SENTENCE. After they order something and finish speaking COMPLETELY, ALWAYS confirm what you heard (e.g., "Perfect. Large pepperoni pizza, anything else?") and ask a follow-up question like "What else can I get you?" - CRITICAL: WAIT for them to finish speaking COMPLETELY before responding. NEVER interrupt. NEVER say "take your time" or similar phrases. IMPORTANT: Once you have asked for the order and they have provided items, NEVER ask "What would you like to order?" again. Instead, if you need something more, ask "What else can I get you?" or "Anything else?"'
+                          text: `The customer just called. You MUST immediately greet them by saying the COMPLETE sentence: "${getBusinessGreeting()}" - FINISH THE ENTIRE SENTENCE. After they order something and finish speaking COMPLETELY, ALWAYS confirm what you heard (e.g., "Perfect. Large pepperoni pizza, anything else?") and ask a follow-up question like "What else can I get you?" - CRITICAL: WAIT for them to finish speaking COMPLETELY before responding. NEVER interrupt. NEVER say "take your time" or similar phrases. IMPORTANT: Once you have asked for the order and they have provided items, NEVER ask "What would you like to order?" again. Instead, if you need something more, ask "What else can I get you?" or "Anything else?"`
                         }
                       ]
                     }
@@ -5888,8 +5901,8 @@ wss.on('connection', (ws, req) => {
       phoneNumber: order.customerPhone || order.from || 'unknown',
       timestamp: new Date().toISOString(), // CRITICAL: ISO string format for Zapier compatibility
       order_timestamp: new Date().toISOString(), // CRITICAL: Also include order_timestamp field (fixes Zapier invalid time value error)
-      storeName: config.name || 'Uncle Sal\'s Pizza',
-      storeLocation: config.location || 'Syracuse, NY',
+      storeName: config.name || getBusinessName(),
+      storeLocation: config.location || 'Your City, State',
     };
     
     // Log to Google Sheets
