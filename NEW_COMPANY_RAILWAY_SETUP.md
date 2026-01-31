@@ -1,5 +1,13 @@
 # New Company Railway Setup - Step by Step
 
+## For Tazza Pizza: Menu + Call Log
+
+If you're setting up **Tazza Pizza** and need the AI to use the **menu** from Google Sheets and log orders to the **Tazza Pizza Call Log** sheet, use this guide:
+
+→ **[TAZZA_PIZZA_RAILWAY_VARIABLES.md](./TAZZA_PIZZA_RAILWAY_VARIABLES.md)** – exact Railway variables, Sheet IDs, and base64 credentials.
+
+---
+
 ## Quick Setup Checklist
 
 ### Step 1: Create New Railway Project (2 minutes)

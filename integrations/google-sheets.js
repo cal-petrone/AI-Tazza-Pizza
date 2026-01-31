@@ -84,13 +84,21 @@ function computeFinalTotal(orderItems) {
 /**
  * Initialize Google Sheets client
  */
+function stripEnv(value) {
+  if (value == null || value === '') return value;
+  const s = String(value).trim();
+  return s.replace(/^["']|["']$/g, '');
+}
+
 async function initializeGoogleSheets() {
-  const credentialsPath = process.env.GOOGLE_SHEETS_CREDENTIALS_PATH;
-  const credentialsBase64 = process.env.GOOGLE_SHEETS_CREDENTIALS_BASE64;
-  const sheetId = process.env.GOOGLE_SHEETS_ID;
+  const credentialsPath = stripEnv(process.env.GOOGLE_SHEETS_CREDENTIALS_PATH);
+  const credentialsBase64 = stripEnv(process.env.GOOGLE_SHEETS_CREDENTIALS_BASE64);
+  const sheetId = stripEnv(process.env.GOOGLE_SHEETS_ID);
   
   if ((!credentialsPath && !credentialsBase64) || !sheetId) {
     console.log('⚠ Google Sheets not configured - skipping initialization');
+    if (!sheetId) console.log('   GOOGLE_SHEETS_ID is missing or empty (check Railway Variables - no quotes around value)');
+    if (!credentialsPath && !credentialsBase64) console.log('   GOOGLE_SHEETS_CREDENTIALS_PATH or GOOGLE_SHEETS_CREDENTIALS_BASE64 is missing');
     return false;
   }
   

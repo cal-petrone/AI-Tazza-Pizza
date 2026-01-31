@@ -1139,26 +1139,29 @@ async function fetchMenuFromGoogleSheets() {
 
 /**
  * Parse Google Sheets rows into menu format
- * UNCLE SAL'S FORMAT: A=Category, B=Item, C=IN STOCK, D=Price, E=Description
+ * Supports two layouts via MENU_DESCRIPTION_COLUMN:
+ *   D (default): A=Category, B=Item, C=IN STOCK, D=Description, E=Price
+ *   E:          A=Category, B=Item, C=IN STOCK, D=Price, E=Description
  */
 function parseMenuFromSheets(rows, toppings = [], sizeGuide = []) {
   const menu = {};
   const menuTextByCategory = {};
+  const descCol = (process.env.MENU_DESCRIPTION_COLUMN || 'D').toUpperCase();
+  const descriptionInD = (descCol === 'D');
   
-  console.log(`📋 Parsing menu with Uncle Sal's format: A=Category, B=Item, C=InStock, D=Price, E=Description`);
+  console.log(`📋 Parsing menu: A=Category, B=Item, C=InStock, D=${descriptionInD ? 'Description' : 'Price'}, E=${descriptionInD ? 'Price' : 'Description'}`);
   
   rows.forEach((row, index) => {
-    // Skip empty rows or rows with less than 4 columns
-    if (!row || row.length < 4) {
+    // Skip empty rows or rows with less than 5 columns (need D and E)
+    if (!row || row.length < 5) {
       return;
     }
     
-    // Uncle Sal's format: A=Category, B=Item, C=IN STOCK, D=Price, E=Description
     const category = (row[0] || '').toString().trim();
     const itemName = (row[1] || '').toString().trim();
     const inStock = (row[2] || '').toString().trim().toUpperCase();
-    let priceStr = (row[3] || '').toString().trim();
-    const description = (row[4] || '').toString().trim();
+    const description = (descriptionInD ? row[3] : row[4]) ? (descriptionInD ? row[3] : row[4]).toString().trim() : '';
+    let priceStr = (descriptionInD ? row[4] : row[3]) ? (descriptionInD ? row[4] : row[3]).toString().trim() : '';
     
     // #region agent log
     // DEBUG: Log first 5 items with their descriptions to verify parsing
@@ -5946,9 +5949,9 @@ wss.on('connection', (ws, req) => {
       } else {
         console.error('❌❌❌ GOOGLE SHEETS LOGGING FAILED ❌❌❌');
         console.error('❌ Check Google Sheets configuration:');
-        console.error('   - GOOGLE_SHEETS_CREDENTIALS_PATH:', process.env.GOOGLE_SHEETS_CREDENTIALS_PATH);
-        console.error('   - GOOGLE_SHEETS_ID:', process.env.GOOGLE_SHEETS_ID);
-        console.error('   - Service account must have edit access to the sheet');
+        console.error('   - GOOGLE_SHEETS_ID (Call Log sheet):', process.env.GOOGLE_SHEETS_ID ? '(set)' : 'MISSING - add in Railway Variables');
+        console.error('   - GOOGLE_SHEETS_CREDENTIALS_BASE64:', process.env.GOOGLE_SHEETS_CREDENTIALS_BASE64 ? '(set)' : 'MISSING');
+        console.error('   - Share "Tazza Pizza Call Log" sheet with service account email (Editor)');
       }
     } catch (error) {
       console.error('❌❌❌ ERROR LOGGING TO GOOGLE SHEETS ❌❌❌');
