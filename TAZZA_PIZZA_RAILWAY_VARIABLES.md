@@ -62,7 +62,9 @@ The app reads the menu from **one tab** inside the menu spreadsheet.
 
 ---
 
-## 4. Call log sheet layout
+## 4. Call log sheet layout and gridlines
+
+**Gridlines:** In Google Sheets, gridlines are a view setting (View → Gridlines). Your sheet already has columns; gridlines stay as long as that option is on. The app does not change gridlines.
 
 Your **Tazza Pizza Call Log** already has the right columns:
 

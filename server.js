@@ -1632,9 +1632,12 @@ app.post('/incoming-call', (req, res) => {
     // This ensures seamless real-time conversation
   
     // Connect to Media Stream WebSocket
-    // Specify audio format - Twilio can accept PCM16 if we specify it
+    // Pass caller phone in URL so it's available even if map lookup fails (e.g. different route/server)
+    const streamUrlWithFrom = callerPhone
+      ? `${wsUrl}${wsUrl.includes('?') ? '&' : '?'}from=${encodeURIComponent(callerPhone)}`
+      : wsUrl;
     const stream = twiml.connect().stream({
-      url: wsUrl
+      url: streamUrlWithFrom
     });
   
     // Note: Twilio sends mu-law (g711_ulaw), and we're now configured to receive g711_ulaw from OpenAI
@@ -2027,7 +2030,8 @@ server.on('clientError', (err, socket) => {
 server.on('upgrade', (request, socket, head) => {
   // CRITICAL: Wrap in try-catch to prevent crashes
   try {
-    if (request.url === '/media-stream') {
+    const pathname = request.url ? new URL(request.url, 'http://localhost').pathname : '';
+    if (pathname === '/media-stream') {
       wss.handleUpgrade(request, socket, head, (ws) => {
         wss.emit('connection', ws, request);
       });
@@ -2077,12 +2081,16 @@ wss.on('connection', (ws, req) => {
   console.log('Twilio Media Stream WebSocket connection received');
   console.log('Request URL:', req.url);
   
-  // Extract calledNumber from query params if available
-  const urlParams = new URL(req.url, `http://${req.headers.host}`).searchParams;
+  // Extract calledNumber and caller "from" from query params (from is passed in stream URL for reliable phone logging)
+  const urlParams = new URL(req.url || '/', `http://${req.headers.host}`).searchParams;
   const calledNumber = urlParams.get('calledNumber') || urlParams.get('To');
+  const fromParam = urlParams.get('from'); // Caller phone passed in stream URL from TwiML
   if (calledNumber) {
     storeConfig = getStoreConfig(calledNumber);
     console.log('✓ Store config loaded for:', calledNumber, '-', storeConfig.name);
+  }
+  if (fromParam) {
+    console.log('📞 Caller phone from stream URL (from param):', fromParam);
   }
   
   // Handle messages from Twilio
@@ -2096,18 +2104,24 @@ wss.on('connection', (ws, req) => {
           streamSid = data.start.streamSid;
           const callSid = data.start.callSid;
           
-          // CRITICAL: Get caller's phone number from stored map
+          // CRITICAL: Get caller's phone - 1) map from incoming POST, 2) from stream URL param, 3) fallback Unknown
           let callerPhone = callerPhoneNumbers.get(callSid) || null;
-          
-          if (callerPhone) {
-            console.log('📞 Retrieved caller phone number for call:', callerPhone);
-          } else {
-            console.error('❌❌❌ CRITICAL: No caller phone found in map for callSid:', callSid);
+          if (!callerPhone && fromParam) {
+            const cleaned = String(fromParam).replace(/\D/g, '').replace(/^1/, '').slice(-10);
+            if (cleaned.length >= 10) {
+              callerPhone = cleaned;
+              callerPhoneNumbers.set(callSid, callerPhone);
+              console.log('📞 Using caller phone from stream URL param:', callerPhone);
+            }
+          }
+          if (!callerPhone) {
+            console.error('❌❌❌ CRITICAL: No caller phone found in map or URL for callSid:', callSid);
             console.error('❌ Available callSids in map:', Array.from(callerPhoneNumbers.keys()));
-            // Set fallback - MUST have a phone number
             callerPhone = 'Unknown';
             callerPhoneNumbers.set(callSid, 'Unknown');
             console.log('⚠️  Set "Unknown" as fallback phone for callSid:', callSid);
+          } else {
+            console.log('📞 Retrieved caller phone number for call:', callerPhone);
           }
           
           // CRITICAL: Log phone number at stream start
